@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Test-task</title>
+</head>
+<body>
+<main class="main-box">
+    <form id="app" v-cloak>   <!--cloak скрыть шаблон Vue.js пока он не отрендерится.-->
+        <div class="flex-block">
+
+            <div class="main-box__item medium-3">
+                
+                <div class="main-box__button-show" v-on:click="show = !show">Actor search</div> <!-- кнопка для отображения секции поиска -->
+                
+                <transition name="fade"> <!-- плавное появление -->
+                    <div class="search-block" v-if="!show">
+                        <div class="bar">
+                            <!-- Создает связь мужду моделью searchString model и текстовым полем -->
+
+                            <input type="text" v-model="searchStringPeople" placeholder="Enter actor name"/>
+                        </div>
+                        <ul class="search-block_list medium-3">
+                            <li>
+                                <h1>Actors</h1>
+                            </li>
+                            <!-- Рендерится li под каждый элемент массива filtered. -->
+                            <li v-for="person in filteredPeople">
+                                <p>
+                                    {{person.name}}
+                                </p>
+                                <a v-bind:href="person.url">
+                                    {{person.url}}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </transition>
+            </div>
+
+            <div class="main-box__item medium-3">
+                <div class="main-box__button-show" v-on:click="showFilms = !showFilms">Films search</div>
+                <transition name="fade">
+                    <div class="search-block" v-if="!showFilms">
+                        <div class="bar">
+
+                            <input type="text" v-model="searchStringFilms" placeholder="Enter film name"/>
+                        </div>
+                        <ul class="search-block_list medium-3">
+                            <li>
+                                <h1>
+                                    Films
+                                </h1>
+                            </li>
+                            <li v-for="film in filteredFilms">
+                                <p>
+                                    {{film.title}}
+                                </p>
+                                <a v-bind:href="film.url">
+                                    {{film.url}}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </transition>
+            </div>
+
+            <div class="main-box__item medium-3">
+                <div class="main-box__button-show" v-on:click="showStarships = !showStarships">Starships search</div>
+                <transition name="fade">
+                    <div class="search-block" v-if="!showStarships">
+                        <div class="bar">
+
+                            <input type="text" v-model="searchStringStarships" placeholder="Enter starship name"/>
+                        </div>
+                        <ul class="search-block_list medium-3">
+                            <li>
+                                <h1>
+                                    Starships
+                                </h1>
+                            </li>
+                            <li v-for="starship in filteredStarships">
+                                <p>
+                                    {{starship.name}}
+                                </p>
+                                <a v-bind:href="starship.url">
+                                    {{starship.url}}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </transition>
+            </div>
+
+            <div class="main-box__item medium-3">
+                <div class="main-box__button-show" v-on:click="showVehicles = !showVehicles">Vehicles search</div>
+                <transition name="fade">
+                    <div class="search-block" v-if="!showVehicles">
+                        <div class="bar">
+
+                            <input type="text" v-model="searchStringVehicles" placeholder="Enter vehicles name"/>
+                        </div>
+                        <ul class="search-block_list medium-3">
+                            <li>
+                                <h1>
+                                    Vehicles
+                                </h1>
+                            </li>
+                            <li v-for="vehicle in filteredVehicles">
+                                <p>
+                                    {{vehicle.name}}
+                                </p>
+                                <a v-bind:href="vehicle.url">
+                                    {{vehicle.name}}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </transition>
+            </div>
+
+        </div>
+    </form>
+</main>
+<script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.3.1/js/foundation.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.15.3/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+<script>
+
+
+</script>
+<script>
+    $(document).foundation();
+
+    let urlPeople = 'https://swapi.co/api/people';
+    let urlFilms = 'https://swapi.co/api/films/?format=json';
+    let urlStarships = 'https://swapi.co/api/starships/?format=json';
+    let urlVehicles = 'https://swapi.co/api/vehicles/?format=json';
+
+    new Vue({
+        el: 'main',
+        data: {
+            show: true,
+            showFilms: true,
+            showStarships: true,
+            showVehicles: true,
+            searchStringPeople: "",
+            searchStringFilms: "",
+            searchStringStarships: "",
+            searchStringVehicles: "",
+            people: [],
+            films: [],
+            starships: [],
+            vehicles: [],
+        },
+        methods: {
+            loadData() { //метод загрузки данных
+                axios.get(urlPeople)
+                    .then((response) => {
+                        this.people = response.data.results;
+                    });
+                axios.get(urlFilms)
+                    .then((response) => {
+                        this.films = response.data.results;
+                    });
+                axios.get(urlStarships)
+                    .then((response) => {
+                        this.starships = response.data.results;
+                    });
+                axios.get(urlVehicles)
+                    .then((response) => {
+                        this.vehicles = response.data.results;
+                    });
+            },
+        },
+        mounted() {
+            // Когда компонент готов, извлекается JSON из серверной части
+            this.loadData();
+        },
+
+        computed: {
+            // Вычисленное свойство, которое содержит только те данные, которые соответствуют searchString.
+            filteredFilms: function () {
+                let articles_films = this.films,
+                    searchStringFilms = this.searchStringFilms;
+
+                if (!searchStringFilms) {
+                    return articles_films;
+                }
+
+                searchStringFilms = searchStringFilms.trim().toLowerCase();
+
+                articles_films = articles_films.filter(function (item) {
+                    if (item.title.toLowerCase().indexOf(searchStringFilms) !== -1) {
+                        return item;
+                    }
+                });
+
+                // Возвращает массив с отфильтрованными данными.
+                return articles_films;
+            },
+            filteredPeople: function () {
+                let articles_people = this.people,
+                    searchStringPeople = this.searchStringPeople;
+
+                if (!searchStringPeople) {
+                    return articles_people;
+                }
+
+                searchStringPeople = searchStringPeople.trim().toLowerCase();
+
+                articles_people = articles_people.filter(function (item) {
+                    if (item.name.toLowerCase().indexOf(searchStringPeople) !== -1) {
+                        return item;
+                    }
+                });
+
+                // Возвращает массив с отфильтрованными данными.
+                return articles_people;
+            },
+            filteredStarships: function () {
+                let articles_starships = this.starships,
+                    searchStringStarships = this.searchStringStarships;
+
+                if (!searchStringStarships) {
+                    return articles_starships;
+                }
+
+                searchStringStarships = searchStringStarships.trim().toLowerCase();
+
+                articles_starships = articles_starships.filter(function (item) {
+                    if (item.name.toLowerCase().indexOf(searchStringStarships) !== -1) {
+                        return item;
+                    }
+                });
+
+                // Возвращает массив с отфильтрованными данными.
+                return articles_starships;
+            },
+            filteredVehicles: function () {
+                let articles_vehicles = this.vehicles,
+                    searchStringVehicles = this.searchStringVehicles;
+
+                if (!searchStringVehicles) {
+                    return articles_vehicles;
+                }
+
+                searchStringVehicles = searchStringVehicles.trim().toLowerCase();
+
+                articles_vehicles = articles_vehicles.filter(function (item) {
+                    if (item.name.toLowerCase().indexOf(searchStringVehicles) !== -1) {
+                        return item;
+                    }
+                });
+
+                // Возвращает массив с отфильтрованными данными.
+                return articles_vehicles;
+            }
+        }
+    });
+</script>
+<style scoped>
+    [v-cloak] {
+        display: none;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font: 15px/1.3 'Open Sans', sans-serif;
+        background: rgb(244, 226, 156);
+        background: -moz-linear-gradient(-45deg, rgba(244, 226, 156, 0) 0%, rgba(59, 41, 58, 1) 100%),
+        -moz-linear-gradient(left, rgba(244, 226, 156, 1) 0%, rgba(130, 96, 87, 1) 100%);
+        background: -webkit-linear-gradient(-45deg, rgba(244, 226, 156, 0) 0%, rgba(59, 41, 58, 1) 100%),
+        -webkit-linear-gradient(left, rgba(244, 226, 156, 1) 0%, rgba(130, 96, 87, 1) 100%);
+        background: -o-linear-gradient(-45deg, rgba(244, 226, 156, 0) 0%, rgba(59, 41, 58, 1) 100%),
+        -o-linear-gradient(left, rgba(244, 226, 156, 1) 0%, rgba(130, 96, 87, 1) 100%);
+        background: -ms-linear-gradient(-45deg, rgba(244, 226, 156, 0) 0%, rgba(59, 41, 58, 1) 100%),
+        -ms-linear-gradient(left, rgba(244, 226, 156, 1) 0%, rgba(130, 96, 87, 1) 100%);
+        background: linear-gradient(135deg, rgba(244, 226, 156, 0) 0%, rgba(59, 41, 58, 1) 100%),
+        linear-gradient(to right, rgba(244, 226, 156, 1) 0%, rgba(130, 96, 87, 1) 100%);
+        color: #ffffff;
+        min-height: 100vh;
+        height: 100%;
+
+    }
+
+    a, a:visited {
+        outline: none;
+        color: #389dc1;
+    }
+
+    a:hover {
+        text-decoration: none;
+    }
+
+    section, footer, header, aside, nav {
+        display: block;
+    }
+
+    /*-------------------------
+        Search styles
+    --------------------------*/
+
+    .flex-block {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .medium-3 {
+        width: 25%;
+        text-align: center;
+        min-width: 250px;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .main-box__button-show {
+        max-width: 150px;
+        padding: 10px 10px;
+        box-sizing: border-box;
+        background-color: black;
+        border-radius: 4px;
+        color: white;
+        cursor: pointer;
+        transition: 0.4s;
+        margin: 40px auto;
+    }
+    .main-box__button-show:hover {
+        transition: 0.4s;
+        color:black ;
+        border-radius: 8px;
+        background-color:white ;
+    }
+
+    .fade-enter-active,
+    .fade-leave-active {
+        transition: opacity .5s;
+    }
+
+    .fade-enter,
+    .fade-leave-to {
+        opacity: 0;
+    }
+    .bar {
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 7px;
+        text-align: center;
+        padding: 8px;
+        margin: 20px auto 0;
+        position: relative;
+        box-sizing: border-box;
+        max-width: 250px;
+    }
+
+    .bar input {
+        background: #fff no-repeat 13px 13px;
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkU5NEY0RTlFMTA4NzExRTM5RTEzQkFBQzMyRjkyQzVBIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkU5NEY0RTlGMTA4NzExRTM5RTEzQkFBQzMyRjkyQzVBIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6RTk0RjRFOUMxMDg3MTFFMzlFMTNCQUFDMzJGOTJDNUEiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6RTk0RjRFOUQxMDg3MTFFMzlFMTNCQUFDMzJGOTJDNUEiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz4DjA/RAAABK0lEQVR42pTSQUdEURjG8dOY0TqmPkGmRcqYD9CmzZAWJRHVRIa0iFYtM6uofYaiEW2SRJtEi9YxIklp07ZkWswu0v/wnByve7vm5ee8M+85zz1jbt9Os+WiGkYdYxjCOx5wgFeXUHmtBSzpcCGa+5BJTCjEP+0nKWAT8xqe4ArPGEEVC1hHEbs2oBwdXkM7mj/JLZrad437sCGHOfUtcziutuYu2v8XUFF/4f6vMK/YgAH1HxkBYV60AR31gxkBYd6xAeF3VzMCwvzOBpypX8V4yuFRzX2d2gD/l5yjH4fYQEnzkj4fae5rJulF2sMXVrAsaTWttRFu4Osb+1jEDT71/ZveyhouTch2fINQL9hKefKjuYFfuznXWzXMTabyrvfyIV3M4vhXgAEAUMs7K0J9UJAAAAAASUVORK5CYII=);
+        border: none;
+        width: 100%;
+        line-height: 19px;
+        padding: 11px 0;
+        border-radius: 2px;
+        box-shadow: 0 2px 8px #c4c4c4 inset;
+        text-align: left;
+        font-size: 14px;
+        font-family: inherit;
+        color: #738289;
+        font-weight: bold;
+        outline: none;
+        text-indent: 40px;
+    }
+
+    .search-block_list {
+        list-style: none;
+        max-width: 428px;
+        margin: 0 auto;
+        text-align: left;
+    }
+
+    .search-block_list li {
+        border-bottom: 1px solid #ddd;
+        padding: 10px;
+        overflow: hidden;
+    }
+
+    .search-block_list li p {
+        font-weight: bold;
+        color: #ffffff;
+    }
+</style>
+</body>
+</html>
